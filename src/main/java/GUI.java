@@ -26,6 +26,10 @@ public class GUI {
     public static String[] numbers;
     public static String[] countries;
 
+    public int yearSearchValue;
+    public int numberSearchValue;
+    public String countrySearchValue;
+
     public static void main(String[] args) throws IOException {
         System.setProperty("java.net.useSystemProxies", "true");
         System.setProperty("http.proxyHost", "DCA-WBSAPP-P001.rac.com.au");
@@ -59,33 +63,60 @@ public class GUI {
         guiFrame.setLocationRelativeTo(null);
         final JPanel comboPanel = new JPanel(new GridLayout(4, 2, 3, 3));
 
-        JLabel yearComboLbl = new JLabel("Year:", SwingConstants.RIGHT);
+        JLabel yearComboLbl = new JLabel("Year:", SwingConstants.CENTER);
         JComboBox yearComboBox = new JComboBox(years);
         comboPanel.add(yearComboLbl);
         comboPanel.add(yearComboBox);
         yearComboBox.setSelectedIndex(-1);
+        yearComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent eventYear) {
+                if(yearComboBox.getSelectedIndex() != -1) {
+                    yearSearchValue = Integer.parseInt(years[yearComboBox.getSelectedIndex()]);
+                    System.out.println(yearSearchValue);
+                }
+            }
+        });
 
-        JLabel numberComboLbl = new JLabel("Number:", SwingConstants.RIGHT);
+        JLabel numberComboLbl = new JLabel("Number:", SwingConstants.CENTER);
         JComboBox numberComboBox = new JComboBox(numbers);
         comboPanel.add(numberComboLbl);
         comboPanel.add(numberComboBox);
         numberComboBox.setSelectedIndex(-1);
+        numberComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent eventNumber) {
+                if(numberComboBox.getSelectedIndex() != -1) {
+                    numberSearchValue = Integer.parseInt(numbers[numberComboBox.getSelectedIndex()]);
+                    System.out.println(numberSearchValue);
+                }
+            }
+        });
 
-        JLabel countryComboLbl = new JLabel("Country:", SwingConstants.RIGHT);
+        JLabel countryComboLbl = new JLabel("Country:", SwingConstants.CENTER);
         JComboBox countryComboBox = new JComboBox(countries);
         comboPanel.add(countryComboLbl);
         comboPanel.add(countryComboBox);
         countryComboBox.setSelectedIndex(-1);
+        countryComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent eventCountry) {
+                if(countryComboBox.getSelectedIndex() != -1) {
+                    countrySearchValue = countries[countryComboBox.getSelectedIndex()];
+                    System.out.println(countrySearchValue);
+                }
+            }
+        });
 
         final JPanel listPanel = new JPanel();
         listPanel.setVisible(false);
         JLabel numberListLbl = new JLabel("Number:");
         JList numberList = new JList(numbers);
         numberList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-
         listPanel.add(numberListLbl);
         listPanel.add(numberList);
         JButton yearNumberButton = new JButton("Year or Number");
+
         yearNumberButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
