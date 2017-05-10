@@ -8,18 +8,20 @@ public class Hottest100 {
     public String song;
     public String artist;
     public String length;
+    public String country;
 
-    public Hottest100(int year, int number, String song, String artist, String length) {
+    public Hottest100(int year, int number, String song, String artist, String length, String country) {
         this.year = year;
         this.number = number;
         this.song = song;
         this.artist = artist;
         this.length = length;
+        this.country = country;
     }
 
     @Override
     public String toString() {
-        return year + "," + number + "," + song + "," + artist + "," + length;
+        return year + "," + number + "," + song + "," + artist + "," + length + "," + country;
     }
 
     public int getYear(){
@@ -41,4 +43,9 @@ public class Hottest100 {
     public String getLength(){
         return length;
     }
+
+    public String getCountry() {
+        return country;
+    }
+
 }

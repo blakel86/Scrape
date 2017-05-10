@@ -24,6 +24,8 @@ public class Main {
 
         Connect connection = new Connect();
 
-        server.stopServer();
+//        GUI gui = new GUI();
+
+//        server.stopServer();
     }
 }

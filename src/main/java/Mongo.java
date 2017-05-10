@@ -4,9 +4,8 @@
 
 import com.mongodb.*;
 import com.mongodb.client.model.Indexes;
-
 import java.io.IOException;
-
+import java.util.concurrent.TimeUnit;
 
 public class Mongo {
 
@@ -29,13 +28,24 @@ public class Mongo {
                 .append("number", hottest100.getNumber())
                 .append("song", hottest100.getSong())
                 .append("artist", hottest100.getArtist())
-                .append("length", hottest100.getLength());
+                .append("length", hottest100.getLength())
+                .append("country", hottest100.getCountry());
         col.insert(doc);
     }
 
     public static void createIndexes(){
-        col.createIndex(String.valueOf(Indexes.ascending("year", "number")));
-        col.createIndex(String.valueOf(Indexes.descending("year", "number")));
+        col.createIndex(String.valueOf(Indexes.ascending("year")));
+        col.createIndex(String.valueOf(Indexes.ascending("number")));
+        col.createIndex(String.valueOf(Indexes.ascending("song")));
+        col.createIndex(String.valueOf(Indexes.ascending("artist")));
+        col.createIndex(String.valueOf(Indexes.ascending("length")));
+        col.createIndex(String.valueOf(Indexes.ascending("country")));
+        col.createIndex(String.valueOf(Indexes.descending("year")));
+        col.createIndex(String.valueOf(Indexes.descending("number")));
+        col.createIndex(String.valueOf(Indexes.descending("song")));
+        col.createIndex(String.valueOf(Indexes.descending("artist")));
+        col.createIndex(String.valueOf(Indexes.descending("length")));
+        col.createIndex(String.valueOf(Indexes.descending("country")));
     }
 
     public static BasicDBObject fields(){
@@ -45,7 +55,9 @@ public class Mongo {
         fields.put("year", 1);
         fields.put("number", 1);
         fields.put("song", 1);
+        fields.put("artist", 1);
         fields.put("length", 1);
+        fields.put("country", 1);
 
         return fields;
     }
@@ -70,12 +82,13 @@ public class Mongo {
         }
     }
 
-    public static void queryClose(){
+    public static void queryClose() throws InterruptedException {
         fields();
         createIndexes();
         returnAllQuery();
         top3Query();
 //        mongo.dropDatabase("hottest100DB");
+        TimeUnit.SECONDS.sleep(1);
         mongo.close();
     }
 }
