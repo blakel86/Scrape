@@ -2,9 +2,7 @@
  * Created by laroux0b on 9/05/2017.
  */
 
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.MongoClient;
+import com.mongodb.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +12,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+
 
 public class GUI {
     public static JFrame guiFrame;
@@ -26,9 +25,13 @@ public class GUI {
     public static String[] numbers;
     public static String[] countries;
 
-    public int yearSearchValue;
-    public int numberSearchValue;
-    public String countrySearchValue;
+//    public int yearSearchValue;
+//    public int numberSearchValue;
+    public static String yearSearchValue;
+    public static String numberSearchValue;
+    public static String countrySearchValue;
+
+    public static BasicDBObject fields;
 
     public static void main(String[] args) throws IOException {
         System.setProperty("java.net.useSystemProxies", "true");
@@ -67,14 +70,16 @@ public class GUI {
         JComboBox yearComboBox = new JComboBox(years);
         comboPanel.add(yearComboLbl);
         comboPanel.add(yearComboBox);
-        yearComboBox.setSelectedIndex(-1);
+        yearComboBox.setSelectedIndex(0);
+        yearSearchValue = years[yearComboBox.getSelectedIndex()];
         yearComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent eventYear) {
-                if(yearComboBox.getSelectedIndex() != -1) {
-                    yearSearchValue = Integer.parseInt(years[yearComboBox.getSelectedIndex()]);
+//                if(yearComboBox.getSelectedIndex() != -1) {
+//                    yearSearchValue = Integer.parseInt(years[yearComboBox.getSelectedIndex()]);
+                    yearSearchValue = years[yearComboBox.getSelectedIndex()];
                     System.out.println(yearSearchValue);
-                }
+//                }
             }
         });
 
@@ -82,14 +87,16 @@ public class GUI {
         JComboBox numberComboBox = new JComboBox(numbers);
         comboPanel.add(numberComboLbl);
         comboPanel.add(numberComboBox);
-        numberComboBox.setSelectedIndex(-1);
+        numberComboBox.setSelectedIndex(0);
+        numberSearchValue = numbers[numberComboBox.getSelectedIndex()];
         numberComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent eventNumber) {
-                if(numberComboBox.getSelectedIndex() != -1) {
-                    numberSearchValue = Integer.parseInt(numbers[numberComboBox.getSelectedIndex()]);
+//                if(numberComboBox.getSelectedIndex() != -1) {
+//                    numberSearchValue = Integer.parseInt(numbers[numberComboBox.getSelectedIndex()]);
+                    numberSearchValue = numbers[numberComboBox.getSelectedIndex()];
                     System.out.println(numberSearchValue);
-                }
+//                }
             }
         });
 
@@ -97,14 +104,15 @@ public class GUI {
         JComboBox countryComboBox = new JComboBox(countries);
         comboPanel.add(countryComboLbl);
         comboPanel.add(countryComboBox);
-        countryComboBox.setSelectedIndex(-1);
+        countryComboBox.setSelectedIndex(0);
+        countrySearchValue = countries[countryComboBox.getSelectedIndex()];
         countryComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent eventCountry) {
-                if(countryComboBox.getSelectedIndex() != -1) {
+//                if(countryComboBox.getSelectedIndex() != -1) {
                     countrySearchValue = countries[countryComboBox.getSelectedIndex()];
                     System.out.println(countrySearchValue);
-                }
+//                }
             }
         });
 
@@ -115,32 +123,43 @@ public class GUI {
         numberList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         listPanel.add(numberListLbl);
         listPanel.add(numberList);
-        JButton yearNumberButton = new JButton("Year or Number");
+//        JButton yearNumberButton = new JButton("Year or Number");
 
-        yearNumberButton.addActionListener(new ActionListener() {
+//        yearNumberButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent event) {
+//                //When the fruit of veg button is pressed
+//                //the setVisible value of the listPanel and
+//                //comboPanel is switched from true to
+//                //value or vice versa.
+//                listPanel.setVisible(!listPanel.isVisible());
+//                comboPanel.setVisible(!comboPanel.isVisible());
+//            }
+//        });
+
+        JButton queryButton = new JButton("Run Query");
+        queryButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent event) {
-                //When the fruit of veg button is pressed
-                //the setVisible value of the listPanel and
-                //comboPanel is switched from true to
-                //value or vice versa.
-                listPanel.setVisible(!listPanel.isVisible());
-                comboPanel.setVisible(!comboPanel.isVisible());
+            public void actionPerformed(ActionEvent eventQuery) {
+                queryGUI();
             }
         });
 
+
         guiFrame.add(comboPanel, BorderLayout.PAGE_START);
         guiFrame.add(listPanel, BorderLayout.CENTER);
-        guiFrame.add(yearNumberButton, BorderLayout.PAGE_END);
+//        guiFrame.add(yearNumberButton, BorderLayout.PAGE_END);
+        guiFrame.add(queryButton, BorderLayout.PAGE_END);
         guiFrame.setVisible(true);
     }
 
     public static String[] returnDistinctYears() {
         List list = col.distinct("year");
-        String[] yearsList = new String[list.size()];
+        String[] yearsList = new String[list.size()+1];
         list.sort(Comparator.comparingInt(Object::hashCode).reversed());
+        yearsList[0] = "SELECT";
         for(int i = 0; i <list.size(); i++) {
-            yearsList[i] = list.get(i).toString();
+            yearsList[i+1] = list.get(i).toString();
         }
         return yearsList;
     }
@@ -148,20 +167,62 @@ public class GUI {
     public static String[] returnDistinctNumbers() {
         List list = col.distinct("number");
         list.sort(Comparator.comparingInt(Object::hashCode));
-        String[] numberList = new String[list.size()];
+        String[] numbersList = new String[list.size()+1];
+        numbersList[0] = "SELECT";
         for(int i = 0; i <list.size(); i++) {
-            numberList[i] = list.get(i).toString();
+            numbersList[i+1] = list.get(i).toString();
         }
-        return numberList;
+        return numbersList;
     }
 
     public static String[] returnDistinctCountries() {
         List list = col.distinct("country");
         list.sort(Comparator.comparing(Object::toString));
-        String[] countryList = new String[list.size()];
+        String[] countriesList = new String[list.size()+1];
+        countriesList[0] = "SELECT";
         for(int i = 0; i <list.size(); i++) {
-            countryList[i] = list.get(i).toString();
+            countriesList[i+1] = list.get(i).toString();
         }
-        return countryList;
+        return countriesList;
+    }
+
+    public static BasicDBObject fields(){
+        fields = new BasicDBObject();
+
+        fields.put("_id", 0);
+        fields.put("year", 1);
+        fields.put("number", 1);
+        fields.put("song", 1);
+        fields.put("artist", 1);
+        fields.put("length", 1);
+        fields.put("country", 1);
+
+        return fields;
+    }
+
+    public static void queryGUI(){
+        BasicDBObject queryGUI = new BasicDBObject();
+
+        int yearSearchValueInt;
+        int numberSearchValueInt;
+
+        if(!yearSearchValue.equals("SELECT")) {
+            yearSearchValueInt = Integer.parseInt(yearSearchValue);
+            queryGUI.put("year", new BasicDBObject("$eq", yearSearchValueInt));
+        }
+
+        if(!numberSearchValue.equals("SELECT")) {
+            numberSearchValueInt = Integer.parseInt(numberSearchValue);
+            queryGUI.put("number", new BasicDBObject("$eq", numberSearchValueInt));
+        }
+
+        if(!countrySearchValue.equals("SELECT")) {
+            queryGUI.put("country", new BasicDBObject("$eq", countrySearchValue));
+        }
+
+        DBCursor cursor = col.find(queryGUI, fields());
+        while(cursor.hasNext()) {
+            System.out.println(cursor.next());
+        }
     }
 }

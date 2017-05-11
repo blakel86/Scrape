@@ -82,6 +82,27 @@ public class Mongo {
         }
     }
 
+//    public static void queryGUI(){
+//        BasicDBObject queryGUI = new BasicDBObject();
+//
+//        if(GUI.yearSearchValue != "SELECT") {
+//            queryGUI.put("year", new BasicDBObject("$eq", GUI.yearSearchValue));
+//        }
+//
+//        if(GUI.numberSearchValue != "SELECT") {
+//            queryGUI.put("number", new BasicDBObject("$eq", GUI.numberSearchValue));
+//        }
+//
+//        if(GUI.countrySearchValue != "SELECT") {
+//            queryGUI.put("country", new BasicDBObject("$eq", GUI.countrySearchValue));
+//        }
+//
+//        DBCursor cursor = col.find(queryGUI, fields);
+//        while(cursor.hasNext()) {
+//            System.out.println(cursor.next());
+//        }
+//    }
+
     public static void queryClose() throws InterruptedException {
         fields();
         createIndexes();
