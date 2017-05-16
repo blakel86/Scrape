@@ -47,5 +47,4 @@ public class Hottest100 {
     public String getCountry() {
         return country;
     }
-
 }

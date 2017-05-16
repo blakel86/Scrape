@@ -11,21 +11,38 @@ public class Main {
         System.setProperty("http.proxyHost", "DCA-WBSAPP-P001.rac.com.au");
         System.setProperty("http.proxyPort", "80");
 
-        Server server = new Server();
-        try {
-            server.startServer();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (!Server.isProcessRunning("MongoDB")) {
+
+            Server server = new Server();
+
+            try {
+                server.startServer();
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         Mongo mongo = new Mongo();
 
-        Connect connection = new Connect();
+        if(Mongo.checkDatabaseStatus()){
+            Dialog dialog = new Dialog();
+            if(Dialog.parameter != "Query the existing database"){
+                mongo.createMongoDB();
+                Connect connection = new Connect();
+            }
+            else{
+                SearchGUI search = new SearchGUI();
+            }
+        }
+        else{
+            mongo.createMongoDB();
+            Connect connection = new Connect();
+            SearchGUI search = new SearchGUI();
+        }
 
-//        GUI gui = new GUI();
-
-//        server.stopServer();
+        if(!SearchGUI.searchGUIFrame.isVisible()) {
+            Mongo.mongoClose();
+            Server.stopServer();
+        }
     }
 }

@@ -3,37 +3,59 @@
  */
 
 import com.mongodb.*;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+public class SearchGUI {
 
-public class GUI {
-    public static JFrame guiFrame;
+    public static JFrame searchGUIFrame;
 
     public static DB db;
     public static MongoClient mongoClient;
     public static DBCollection col;
 
-    public static String[] years;
-    public static String[] numbers;
-    public static String[] countries;
+    public String[] years;
+    public String[] numbers;
+    public String[] countries;
 
-//    public int yearSearchValue;
-//    public int numberSearchValue;
-    public static String yearSearchValue;
-    public static String numberSearchValue;
-    public static String countrySearchValue;
+    public String yearSearchValue;
+    public String numberSearchValue;
+    public String countrySearchValue;
 
-    public static BasicDBObject fields;
+    public ArrayList outputList;
 
-    public static void main(String[] args) throws IOException {
+    public int resultCount;
+
+    public SearchGUI() throws IOException {
+        connectMongo();
+
+        years = returnDistinctYears();
+        numbers = returnDistinctNumbers();
+        countries = returnDistinctCountries();
+        System.out.println(Arrays.toString(years));
+        System.out.println(Arrays.toString(numbers));
+        System.out.println(Arrays.toString(countries));
+
+        searchGUIFrame = new JFrame();
+        searchGUIFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        searchGUIFrame.setTitle("Search Triple J Hottest 100");
+        searchGUIFrame.setSize(300, 200);
+        searchGUIFrame.setLocationRelativeTo(null);
+        searchGUIFrame.setEnabled(true);
+
+        addComponents();
+
+        searchGUIFrame.setVisible(true);
+    }
+
+    public void connectMongo(){
         System.setProperty("java.net.useSystemProxies", "true");
         System.setProperty("http.proxyHost", "DCA-WBSAPP-P001.rac.com.au");
         System.setProperty("http.proxyPort", "80");
@@ -44,26 +66,15 @@ public class GUI {
             System.out.println("Connect to hottest100DB database successfully");
             col = db.getCollection("hottest100");
             System.out.println("Collection hottest100 selected successfully");
-
-            years = returnDistinctYears();
-            numbers = returnDistinctNumbers();
-            countries = returnDistinctCountries();
-            System.out.println(Arrays.toString(years));
-            System.out.println(Arrays.toString(numbers));
-            System.out.println(Arrays.toString(countries));
-
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
-        guiFrame = new JFrame();
-        new GUI(guiFrame);
+        catch (Exception e) {
+//            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.out.println("Database does not exist");
+        }
     }
 
-    public GUI(JFrame guiFrame) throws IOException {
-        guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        guiFrame.setTitle("Example GUI");
-        guiFrame.setSize(300, 200);
-        guiFrame.setLocationRelativeTo(null);
+    public void addComponents(){
+
         final JPanel comboPanel = new JPanel(new GridLayout(4, 2, 3, 3));
 
         JLabel yearComboLbl = new JLabel("Year:", SwingConstants.CENTER);
@@ -75,11 +86,8 @@ public class GUI {
         yearComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent eventYear) {
-//                if(yearComboBox.getSelectedIndex() != -1) {
-//                    yearSearchValue = Integer.parseInt(years[yearComboBox.getSelectedIndex()]);
                     yearSearchValue = years[yearComboBox.getSelectedIndex()];
                     System.out.println(yearSearchValue);
-//                }
             }
         });
 
@@ -92,11 +100,8 @@ public class GUI {
         numberComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent eventNumber) {
-//                if(numberComboBox.getSelectedIndex() != -1) {
-//                    numberSearchValue = Integer.parseInt(numbers[numberComboBox.getSelectedIndex()]);
                     numberSearchValue = numbers[numberComboBox.getSelectedIndex()];
                     System.out.println(numberSearchValue);
-//                }
             }
         });
 
@@ -109,51 +114,31 @@ public class GUI {
         countryComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent eventCountry) {
-//                if(countryComboBox.getSelectedIndex() != -1) {
                     countrySearchValue = countries[countryComboBox.getSelectedIndex()];
                     System.out.println(countrySearchValue);
 //                }
             }
         });
 
-        final JPanel listPanel = new JPanel();
-        listPanel.setVisible(false);
-        JLabel numberListLbl = new JLabel("Number:");
-        JList numberList = new JList(numbers);
-        numberList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        listPanel.add(numberListLbl);
-        listPanel.add(numberList);
-//        JButton yearNumberButton = new JButton("Year or Number");
-
-//        yearNumberButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent event) {
-//                //When the fruit of veg button is pressed
-//                //the setVisible value of the listPanel and
-//                //comboPanel is switched from true to
-//                //value or vice versa.
-//                listPanel.setVisible(!listPanel.isVisible());
-//                comboPanel.setVisible(!comboPanel.isVisible());
-//            }
-//        });
-
         JButton queryButton = new JButton("Run Query");
         queryButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent eventQuery) {
+                ResultsGUI.clearSearchResults();
                 queryGUI();
+                try {
+                    ResultsGUI resultsGUI = new ResultsGUI();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
-
-        guiFrame.add(comboPanel, BorderLayout.PAGE_START);
-        guiFrame.add(listPanel, BorderLayout.CENTER);
-//        guiFrame.add(yearNumberButton, BorderLayout.PAGE_END);
-        guiFrame.add(queryButton, BorderLayout.PAGE_END);
-        guiFrame.setVisible(true);
+        searchGUIFrame.add(comboPanel, BorderLayout.PAGE_START);
+        searchGUIFrame.add(queryButton, BorderLayout.PAGE_END);
     }
 
-    public static String[] returnDistinctYears() {
+    public String[] returnDistinctYears() {
         List list = col.distinct("year");
         String[] yearsList = new String[list.size()+1];
         list.sort(Comparator.comparingInt(Object::hashCode).reversed());
@@ -164,7 +149,7 @@ public class GUI {
         return yearsList;
     }
 
-    public static String[] returnDistinctNumbers() {
+    public String[] returnDistinctNumbers() {
         List list = col.distinct("number");
         list.sort(Comparator.comparingInt(Object::hashCode));
         String[] numbersList = new String[list.size()+1];
@@ -175,7 +160,7 @@ public class GUI {
         return numbersList;
     }
 
-    public static String[] returnDistinctCountries() {
+    public String[] returnDistinctCountries() {
         List list = col.distinct("country");
         list.sort(Comparator.comparing(Object::toString));
         String[] countriesList = new String[list.size()+1];
@@ -186,43 +171,48 @@ public class GUI {
         return countriesList;
     }
 
-    public static BasicDBObject fields(){
-        fields = new BasicDBObject();
-
-        fields.put("_id", 0);
-        fields.put("year", 1);
-        fields.put("number", 1);
-        fields.put("song", 1);
-        fields.put("artist", 1);
-        fields.put("length", 1);
-        fields.put("country", 1);
-
-        return fields;
-    }
-
-    public static void queryGUI(){
+    public void queryGUI(){
         BasicDBObject queryGUI = new BasicDBObject();
+
+        int recordYear = 0;
+        int recordNumber = 0;
+        String recordSong = null;
+        String recordArtist = null;
+        String recordLength = null;
+        String recordCountry = null;
 
         int yearSearchValueInt;
         int numberSearchValueInt;
+
+        outputList = new ArrayList<>();
+        ArrayList recordsLists;
 
         if(!yearSearchValue.equals("SELECT")) {
             yearSearchValueInt = Integer.parseInt(yearSearchValue);
             queryGUI.put("year", new BasicDBObject("$eq", yearSearchValueInt));
         }
-
         if(!numberSearchValue.equals("SELECT")) {
             numberSearchValueInt = Integer.parseInt(numberSearchValue);
             queryGUI.put("number", new BasicDBObject("$eq", numberSearchValueInt));
         }
-
         if(!countrySearchValue.equals("SELECT")) {
             queryGUI.put("country", new BasicDBObject("$eq", countrySearchValue));
         }
 
-        DBCursor cursor = col.find(queryGUI, fields());
+        DBCursor cursor = col.find(queryGUI, Mongo.fields());
+        resultCount = cursor.count();
         while(cursor.hasNext()) {
-            System.out.println(cursor.next());
+            recordsLists = (ArrayList) cursor.toArray();
+            for(int i = 0; i < recordsLists.size(); i++) {
+                BasicDBObject recordObject = (BasicDBObject) recordsLists.get(i);
+                recordYear = Integer.parseInt(recordObject.getString("year"));
+                recordNumber = Integer.parseInt(recordObject.getString("number"));
+                recordSong = recordObject.getString("song");
+                recordArtist = recordObject.getString("artist");
+                recordLength = recordObject.getString("length");
+                recordCountry = recordObject.getString("country");
+                ResultsGUI.addRow(recordYear, recordNumber, recordSong, recordArtist, recordLength, recordCountry);
+            }
         }
     }
 }

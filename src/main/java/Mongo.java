@@ -4,6 +4,7 @@
 
 import com.mongodb.*;
 import com.mongodb.client.model.Indexes;
+
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -14,9 +15,26 @@ public class Mongo {
     public static BasicDBObject doc;
     public static DBCollection col;
     public static BasicDBObject fields;
+    public static Boolean doesDatabaseExist;
 
     public Mongo() throws IOException {
         mongo = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+    }
+
+    public static Boolean checkDatabaseStatus() throws IOException {
+        db = mongo.getDB("hottest100DB");
+        if(db.collectionExists("hottest100")){
+            System.out.println("Database exits");
+            doesDatabaseExist = true;
+        }
+        else{
+            System.out.println("Database does not exist");
+            doesDatabaseExist = false;
+        }
+        return doesDatabaseExist;
+    }
+
+    public void createMongoDB(){
         mongo.dropDatabase("hottest100DB");
         db = new DB(mongo, "hottest100DB");
         db.createCollection("hottest100", doc);
@@ -31,21 +49,6 @@ public class Mongo {
                 .append("length", hottest100.getLength())
                 .append("country", hottest100.getCountry());
         col.insert(doc);
-    }
-
-    public static void createIndexes(){
-        col.createIndex(String.valueOf(Indexes.ascending("year")));
-        col.createIndex(String.valueOf(Indexes.ascending("number")));
-        col.createIndex(String.valueOf(Indexes.ascending("song")));
-        col.createIndex(String.valueOf(Indexes.ascending("artist")));
-        col.createIndex(String.valueOf(Indexes.ascending("length")));
-        col.createIndex(String.valueOf(Indexes.ascending("country")));
-        col.createIndex(String.valueOf(Indexes.descending("year")));
-        col.createIndex(String.valueOf(Indexes.descending("number")));
-        col.createIndex(String.valueOf(Indexes.descending("song")));
-        col.createIndex(String.valueOf(Indexes.descending("artist")));
-        col.createIndex(String.valueOf(Indexes.descending("length")));
-        col.createIndex(String.valueOf(Indexes.descending("country")));
     }
 
     public static BasicDBObject fields(){
@@ -73,6 +76,34 @@ public class Mongo {
         }
     }
 
+    public static void createIndexes(){
+        col.createIndex(String.valueOf(Indexes.ascending("year")));
+        System.out.println("Ascending Index for Year created");
+        col.createIndex(String.valueOf(Indexes.ascending("number")));
+        System.out.println("Ascending Index for Number created");
+        col.createIndex(String.valueOf(Indexes.ascending("song")));
+        System.out.println("Ascending Index for Song created");
+        col.createIndex(String.valueOf(Indexes.ascending("artist")));
+        System.out.println("Ascending Index for Artist created");
+        col.createIndex(String.valueOf(Indexes.ascending("length")));
+        System.out.println("Ascending Index for Length created");
+        col.createIndex(String.valueOf(Indexes.ascending("country")));
+        System.out.println("Ascending Index for Country created");
+
+        col.createIndex(String.valueOf(Indexes.descending("year")));
+        System.out.println("Descending Index for Year created");
+        col.createIndex(String.valueOf(Indexes.descending("number")));
+        System.out.println("Descending Index for Number created");
+        col.createIndex(String.valueOf(Indexes.descending("song")));
+        System.out.println("Descending Index for Song created");
+        col.createIndex(String.valueOf(Indexes.descending("artist")));
+        System.out.println("Descending Index for Artist created");
+        col.createIndex(String.valueOf(Indexes.descending("length")));
+        System.out.println("Descending Index for Length created");
+        col.createIndex(String.valueOf(Indexes.descending("country")));
+        System.out.println("Descending Index for Country created");
+    }
+
     public static void returnAllQuery(){
         BasicDBObject returnAllQuery = new BasicDBObject();
 
@@ -82,34 +113,23 @@ public class Mongo {
         }
     }
 
-//    public static void queryGUI(){
-//        BasicDBObject queryGUI = new BasicDBObject();
-//
-//        if(GUI.yearSearchValue != "SELECT") {
-//            queryGUI.put("year", new BasicDBObject("$eq", GUI.yearSearchValue));
-//        }
-//
-//        if(GUI.numberSearchValue != "SELECT") {
-//            queryGUI.put("number", new BasicDBObject("$eq", GUI.numberSearchValue));
-//        }
-//
-//        if(GUI.countrySearchValue != "SELECT") {
-//            queryGUI.put("country", new BasicDBObject("$eq", GUI.countrySearchValue));
-//        }
-//
-//        DBCursor cursor = col.find(queryGUI, fields);
-//        while(cursor.hasNext()) {
-//            System.out.println(cursor.next());
-//        }
-//    }
-
     public static void queryClose() throws InterruptedException {
         fields();
-        createIndexes();
+//        createIndexes();
         returnAllQuery();
         top3Query();
 //        mongo.dropDatabase("hottest100DB");
         TimeUnit.SECONDS.sleep(1);
+//        mongo.close();
+    }
+
+    public static void mongoClose(){
         mongo.close();
+    }
+
+    public static void main(String[] args) throws IOException {
+        MongoClient mongoDrop = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+        mongoDrop.dropDatabase("hottest100DB");
+        mongoDrop.close();
     }
 }
