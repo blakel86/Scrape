@@ -7,6 +7,7 @@ import java.io.IOException;
 public class Main {
 
     public static void main(String[] args) throws IOException, InterruptedException {
+        //Set proxy settings
         System.setProperty("java.net.useSystemProxies", "true");
         System.setProperty("http.proxyHost", "DCA-WBSAPP-P001.rac.com.au");
         System.setProperty("http.proxyPort", "80");
