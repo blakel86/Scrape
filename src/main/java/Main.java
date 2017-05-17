@@ -33,15 +33,16 @@ public class Main {
             //if it does exist open parameter dialog
             Dialog dialog = new Dialog();
             //If user selects anything but "Query the existing database", create database from scratch
-            if(Dialog.parameter != "Query the existing database"){
-                mongo.createMongoDB();
-                Connect connection = new Connect();
+//            if(!Dialog.parameter.equals("Query the existing database")){
+            if(!Dialog.parameter.equals("Query the existing database")){
+                    mongo.createMongoDB();
+                    Connect connection = new Connect();
+                }
+                //If the user selects "Query the existing database", go straight to Search GUI
+                else{
+                    SearchGUI search = new SearchGUI();
+                }
             }
-            //If the user selects "Query the existing database", go straight to Search GUI
-            else{
-                SearchGUI search = new SearchGUI();
-            }
-        }
         //If the database and Table doesn't exist, create from scratch
         else{
             mongo.createMongoDB();
