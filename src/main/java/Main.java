@@ -27,7 +27,8 @@ public class Main {
         //Create new Connection to MongoDB
         Mongo mongo = new Mongo();
 
-        //Check if the Database and Table exists
+        /* Check if the Database and Table exists, if it does exist open parameter dialog, if it doesn't exist, create
+        from scratch */
         if(Mongo.checkDatabaseStatus()){
             //if it does exist open parameter dialog
             Dialog dialog = new Dialog();
