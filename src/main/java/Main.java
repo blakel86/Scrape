@@ -9,7 +9,7 @@ class Main {
     private static String parameter;
     public static void main(String[] args) throws IOException, InterruptedException {
 
-        //Set proxy settings
+        //Set proxy settings for connection
         setProxySettings();
 
         //Check if Server is already running
