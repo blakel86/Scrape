@@ -15,9 +15,10 @@ class Main {
         //Check if Server is already running
         if (!Server.isProcessRunning()) {
             System.out.println(Server.isProcessRunning());
-            System.out.println("Server is already running");
+            System.out.println("Server is not currently running");
             try {
                 Server.startServer();
+                System.out.println("Server is now running");
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }

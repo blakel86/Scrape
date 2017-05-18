@@ -10,7 +10,7 @@ class Connect {
     private int hottest100Year;
 
     void connectToPages() throws InterruptedException {
-        for (int y = 2014; y <= Year.now().getValue(); y++){
+        for (int y = 1993; y <= Year.now().getValue(); y++){
             try{
                 String url = "http://hottest100.org/";
                 doc = Jsoup.connect(url + y + ".html").get();

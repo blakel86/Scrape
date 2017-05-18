@@ -29,7 +29,7 @@ class Server {
             Process p = Runtime.getRuntime().exec(System.getenv("windir") + "\\system32\\" + "tasklist.exe");
             BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
             while ((line = input.readLine()) != null) {
-//                System.out.println(line);
+                System.out.println(line);
                 String processName = "mongod.exe";
                 if (line.contains(processName)) {
                     return true;

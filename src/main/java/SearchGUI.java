@@ -37,7 +37,6 @@ class SearchGUI extends JFrame {
 
         searchGUIFrame = new JFrame();
         searchGUIFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//        searchGUIFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
         searchGUIFrame.setTitle("Search Triple J Hottest 100");
         searchGUIFrame.setSize(300, 200);
         searchGUIFrame.setLocationRelativeTo(null);
