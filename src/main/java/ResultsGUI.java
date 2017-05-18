@@ -1,29 +1,24 @@
-/**
- * Created by laroux0b on 11/05/2017.
- */
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.io.IOException;
 
-public class ResultsGUI extends JFrame {
+class ResultsGUI extends JFrame {
 
-    public static String[] columnNames = {"Year",
+    private final String[] columnNames = {"Year",
                                     "Number",
                                     "Song",
                                     "Artist",
                                     "Length",
                                     "Country"};
 
-    public static DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+    private final DefaultTableModel model = new DefaultTableModel(columnNames, 0);
 
-    public ResultsGUI() throws IOException {
+    void createResultsGUI() {
         initComponent();
         pack();
     }
 
-    public void initComponent() {
+    private void initComponent() {
         JFrame resultsGUIFrame = new JFrame();
         JPanel tablePanel = new JPanel(new BorderLayout());
         JTable resultsTable = new JTable(model);
@@ -38,16 +33,17 @@ public class ResultsGUI extends JFrame {
         tablePanel.add(resultsTable, BorderLayout.CENTER);
         resultsGUIFrame.add(tablePanel);
         JScrollPane scrollPane = new JScrollPane(tablePanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(10);
         resultsGUIFrame.add(scrollPane, BorderLayout.CENTER);
         resultsGUIFrame.setLocationRelativeTo(null);
         resultsGUIFrame.setVisible(true);
     }
 
-    public static void addRow(int recordYear, int recordNumber, String recordSong, String recordArtist, String recordLength, String recordCountry){
+    void addRow(int recordYear, int recordNumber, String recordSong, String recordArtist, String recordLength, String recordCountry){
         model.addRow(new Object[]{recordYear, recordNumber, recordSong, recordArtist, recordLength, recordCountry});
     }
 
-    public static void clearSearchResults(){
+    void clearSearchResults(){
         model.setRowCount(0);
     }
 

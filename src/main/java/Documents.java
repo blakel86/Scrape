@@ -1,54 +1,47 @@
-/**
- * Created by laroux0b on 27/04/2017.
- */
-
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import java.util.ArrayList;
 
-public class Documents {
+class Documents {
 
-    public int year;
-    public int number;
-    public String song;
-    public String artist;
-    public String length;
-    public String country;
+    private int year;
+    private int number;
+    private String song;
+    private String artist;
+    private String length;
+    private String country;
 
-    public static int size;
-    public int numOfRows;
+    private final ArrayList<Hottest100> hottest100 = new ArrayList<>();
 
-    ArrayList<Hottest100> hottest100 = new ArrayList<>();
-
-    public void setHottest100Ob(Hottest100 hottest100Ob) {
+    private void setHottest100Ob(Hottest100 hottest100Ob) {
         this.hottest100Ob = hottest100Ob;
     }
 
-    Hottest100 hottest100Ob = new Hottest100(year, number, song, artist, length, country);
+    private Hottest100 hottest100Ob = new Hottest100(year, number, song, artist, length, country);
 
-    public void addEntry(int year, int number, String song, String artist, String length, String country){
+    private void addEntry(int year, int number, String song, String artist, String length, String country){
         hottest100.add(new Hottest100(year, number, song, artist, length, country));
         setHottest100Ob(new Hottest100(year, number, song, artist, length, country));
     }
 
-    public void processDocument(Document doc){
+    void processDocument(Document doc){
         Element table = doc.select("table").get(0); //select the first table
         processTable(table);
     }
 
-    public ArrayList<Hottest100> getHottest100(){
+    ArrayList<Hottest100> getHottest100(){
         return hottest100;
     }
 
-    public void processTable(Element table) {
+    private void processTable(Element table) {
         Elements rows = table.select("tr");
-        numOfRows = rows.size();
+        int numOfRows = rows.size();
 
         for (int i = 1; i < numOfRows && i <= 100; i++) {
             Element row = rows.get(i);
             Elements rowCols = row.select("td");
-            year = Connect.getHottest100Year();
+            year = Main.connection.getHottest100Year();
             for (int j = 0; j < rowCols.size(); j++) {
                 if (j == 0) {
                     number = Integer.parseInt(rowCols.get(j).text());
@@ -65,8 +58,8 @@ public class Documents {
                 }
             }
             addEntry(year, number, song, artist, length, country);
-            Mongo.addRecord(hottest100Ob);
+            Main.mongo.addRecord(hottest100Ob);
         }
-        size = hottest100.size();
+//        int size = hottest100.size();
     }
 }

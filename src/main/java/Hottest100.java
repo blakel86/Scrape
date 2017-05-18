@@ -1,16 +1,12 @@
-/**
- * Created by laroux0b on 27/04/2017.
- */
+class Hottest100 {
+    private final int year;
+    private final int number;
+    private final String song;
+    private final String artist;
+    private final String length;
+    private final String country;
 
-public class Hottest100 {
-    public int year;
-    public int number;
-    public String song;
-    public String artist;
-    public String length;
-    public String country;
-
-    public Hottest100(int year, int number, String song, String artist, String length, String country) {
+    Hottest100(int year, int number, String song, String artist, String length, String country) {
         this.year = year;
         this.number = number;
         this.song = song;
@@ -24,27 +20,27 @@ public class Hottest100 {
         return year + "," + number + "," + song + "," + artist + "," + length + "," + country;
     }
 
-    public int getYear(){
+    int getYear() {
         return year;
     }
 
-    public int getNumber() {
+    int getNumber() {
         return number;
     }
 
-    public String getSong(){
+    String getSong() {
         return song;
     }
 
-    public String getArtist(){
+    String getArtist() {
         return artist;
     }
 
-    public String getLength(){
+    String getLength() {
         return length;
     }
 
-    public String getCountry() {
+    String getCountry() {
         return country;
     }
 }

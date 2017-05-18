@@ -1,57 +1,48 @@
-/**
- * Created by laroux0b on 27/04/2017.
- */
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.time.Year;
 import java.util.ArrayList;
 
-public class Connect {
+class Connect {
 
-    public static final String url = "http://hottest100.org/";
-    public Document doc;
-    public static int hottest100Year;
-    public static int yearCount;
+    private Document doc;
+    private int hottest100Year;
 
-    public Connect() throws IOException, InterruptedException {
-        for (int y = 1993; y <= Year.now().getValue(); y++){
+    void connectToPages() throws InterruptedException {
+        for (int y = 2014; y <= Year.now().getValue(); y++){
             try{
+                String url = "http://hottest100.org/";
                 doc = Jsoup.connect(url + y + ".html").get();
             }
             catch(IOException e) {
                 break;
             }
             hottest100Year = y;
-            yearCount++;
             scrapePages();
         }
-        Mongo.queryClose();
+        Main.mongo.queryClose();
     }
 
-    public void scrapePages() {
+    private void scrapePages() {
         ArrayList<Documents> documentList = new ArrayList<>();
-        Documents documents;
-        documents = new Documents();
+        Documents documents = new Documents();
         documents.processDocument(doc);
         documentList.add(documents);
         printDocumentsList(documents);
     }
 
-    private static void printDocumentsList(Documents documents) {
+    private void printDocumentsList(Documents documents) {
         for(Hottest100 hottest100 : documents.getHottest100()){
             System.out.println(hottest100);
         }
     }
 
-    public static int getHottest100Year(){
+    int getHottest100Year(){
         return hottest100Year;
     }
 
-    public static int getYearCount() {
-        return yearCount;
-    }
+// --Commented out by Inspection STOP (18/05/2017 12:53 PM)
 
     //    private void printDocumentsMap(Map<Integer, Documents> hottest100ByYear) {
 //        Set<Map.Entry<Integer, Documents>> entries = hottest100ByYear.entrySet();

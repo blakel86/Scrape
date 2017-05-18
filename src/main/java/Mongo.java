@@ -1,27 +1,36 @@
-/**
- * Created by laroux0b on 5/05/2017.
- */
-
 import com.mongodb.*;
 import com.mongodb.client.model.Indexes;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-public class Mongo {
+class Mongo {
 
-    public static DB db;
-    public static MongoClient mongo;
-    public static BasicDBObject doc;
-    public static DBCollection col;
-    public static BasicDBObject fields;
-    public static Boolean doesDatabaseExist;
+    private DB db;
+    private MongoClient mongo;
+    private BasicDBObject doc;
+    DBCollection col;
+    private static BasicDBObject fields;
+    private Boolean doesDatabaseExist;
 
-    public Mongo() throws IOException {
+    void createMongoConnection() {
         mongo = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
     }
 
-    public static Boolean checkDatabaseStatus() throws IOException {
+    void getDatabase(){
+        try {
+            db = mongo.getDB("hottest100DB");
+            System.out.println("Connect to hottest100DB database successfully");
+            col = db.getCollection("hottest100");
+            System.out.println("Collection hottest100 selected successfully");
+        }
+        catch (Exception e) {
+//            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.out.println("Database does not exist");
+        }
+    }
+
+    void checkDatabaseStatus() {
         db = mongo.getDB("hottest100DB");
         if(db.collectionExists("hottest100")){
             System.out.println("Database exits");
@@ -31,17 +40,20 @@ public class Mongo {
             System.out.println("Database does not exist");
             doesDatabaseExist = false;
         }
+    }
+
+    Boolean getDoesDatabaseExist() {
         return doesDatabaseExist;
     }
 
-    public void createMongoDB(){
+    void createMongoDB(){
         mongo.dropDatabase("hottest100DB");
         db = new DB(mongo, "hottest100DB");
         db.createCollection("hottest100", doc);
         col = db.getCollection("hottest100");
     }
 
-    public static void addRecord(Hottest100 hottest100) {
+    void addRecord(Hottest100 hottest100) {
         doc = new BasicDBObject("year", hottest100.getYear())
                 .append("number", hottest100.getNumber())
                 .append("song", hottest100.getSong())
@@ -51,7 +63,7 @@ public class Mongo {
         col.insert(doc);
     }
 
-    public static BasicDBObject fields(){
+    static BasicDBObject fields(){
         fields = new BasicDBObject();
 
         fields.put("_id", 0);
@@ -65,7 +77,7 @@ public class Mongo {
         return fields;
     }
 
-    public static void top3Query(){
+    private void top3Query(){
         BasicDBObject top3Query = new BasicDBObject();
 
         top3Query.put("number", new BasicDBObject("$lt", 4));
@@ -76,7 +88,7 @@ public class Mongo {
         }
     }
 
-    public static void createIndexes(){
+    public void createIndexes(){
         col.createIndex(String.valueOf(Indexes.ascending("year")));
         System.out.println("Ascending Index for Year created");
         col.createIndex(String.valueOf(Indexes.ascending("number")));
@@ -104,7 +116,7 @@ public class Mongo {
         System.out.println("Descending Index for Country created");
     }
 
-    public static void returnAllQuery(){
+    private void returnAllQuery(){
         BasicDBObject returnAllQuery = new BasicDBObject();
 
         DBCursor cursor = col.find(returnAllQuery, fields);
@@ -113,7 +125,7 @@ public class Mongo {
         }
     }
 
-    public static void queryClose() throws InterruptedException {
+    void queryClose() throws InterruptedException {
         fields();
 //        createIndexes();
         returnAllQuery();
@@ -123,7 +135,7 @@ public class Mongo {
 //        mongo.close();
     }
 
-    public static void mongoClose(){
+    void mongoClose(){
         mongo.close();
     }
 
